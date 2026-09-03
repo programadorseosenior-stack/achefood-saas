@@ -1,0 +1,1 @@
+export default function Termos(){return <main className="container" style={{paddingBlock:60}}><h1>Termos de Uso</h1><p className="muted">Documento jurídico pendente de validação profissional antes do lançamento público.</p></main>}

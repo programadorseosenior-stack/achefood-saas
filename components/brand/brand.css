@@ -1,0 +1,6 @@
+.brand-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 800; line-height: 1; }
+.brand-logo strong { color: var(--orange); }
+.brand-logo small { display: block; font-size: 8px; font-weight: 500; margin-top: 4px; letter-spacing: .1px; }
+.brand-mark { position: relative; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 13px; color: white; background: linear-gradient(145deg, #ff9500, #ff4e00); box-shadow: -5px 5px 0 #1ea75a, 5px 5px 0 #0b6ef3; }
+.brand-mark svg { width: 27px; height: 27px; }
+.brand-mark b { position: absolute; font-size: 20px; top: 17px; }

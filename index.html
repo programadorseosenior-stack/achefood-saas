@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AcheFood 1.0</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--navy:#10223d;--navy2:#183254;--orange:#f47b20;--green:#159447;--blue:#1877c9;--bg:#f4f6f9;--line:#e2e7ee;--muted:#667085;--white:#fff;--danger:#b42318;--shadow:0 8px 28px rgba(16,34,61,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#182230;font:14px Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus,input:focus,select:focus,textarea:focus{outline:3px solid #f47b2040;outline-offset:1px}
+#side{position:fixed;inset:0 auto 0 0;width:238px;background:var(--navy);color:#fff;padding:18px 13px;z-index:20;display:flex;flex-direction:column}.brand{font-size:22px;font-weight:900;padding:4px 10px 18px}.brand b{color:var(--orange)}.profile{display:flex;gap:9px;align-items:center;background:#1b3153;border-radius:11px;padding:10px;margin-bottom:12px}.avatar{width:34px;height:34px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font-weight:900}.profile small{display:block;color:#b8c6d8;margin-top:2px}.nav button{display:block;width:100%;border:0;background:transparent;color:#dbe5f2;text-align:left;padding:10px 11px;border-radius:8px;margin:2px 0;font-weight:650}.nav button:hover,.nav button.active{background:#1b3153;color:#fff}.nav em{float:right;background:var(--orange);border-radius:20px;padding:2px 6px;font-size:10px;font-style:normal}.sidebottom{margin-top:auto;border-top:1px solid #29405f;padding-top:9px}
+#top{margin-left:238px;height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 24px;position:sticky;top:0;z-index:10}.menu{display:none;border:0;background:transparent;font-size:24px;color:var(--navy)}.topbrand{display:none;font-weight:900;font-size:20px;color:var(--navy)}.topbrand b{color:var(--orange)}.search{height:42px;display:flex;flex:1;max-width:760px;margin:auto;border:2px solid var(--orange);border-radius:24px;overflow:hidden;background:#fff}.search input{flex:1;border:0;padding:0 15px;min-width:0}.search button{width:52px;border:0;background:var(--orange);color:#fff}.filter{border:0;border-radius:20px;background:#eef2f6;color:var(--navy);font-weight:750;padding:9px 13px}.company{border:1px solid var(--line);background:#fff;border-radius:20px;padding:8px 12px;color:var(--navy);font-weight:750;max-width:185px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+main{margin-left:238px;padding:24px 30px;max-width:1500px}.view{display:none}.view.active{display:block}.welcome{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#fff,#fff8f1);border:1px solid var(--line);border-radius:17px;padding:26px 30px;box-shadow:var(--shadow);margin-bottom:15px}.eyebrow{font-size:11px;letter-spacing:1.8px;color:var(--orange);font-weight:900}.welcome h1{font-size:30px;margin:6px 0;color:var(--navy);letter-spacing:-.6px}.welcome h1 span{color:var(--orange)}.welcome p{margin:0;color:var(--muted)}.mark{width:82px;height:82px;border-radius:22px;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;font-size:42px;color:var(--orange)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.quick{color:#fff;border-radius:13px;padding:17px;min-height:108px;box-shadow:var(--shadow);cursor:pointer}.quick.orange{background:var(--orange)}.quick.green{background:var(--green)}.quick.blue{background:var(--blue)}.quick strong{display:block;font-size:16px;margin-top:8px}.quick small{opacity:.9}.icon{font-size:24px}.section{margin-top:18px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.head h2{margin:0;color:var(--navy);font-size:19px}.link{border:0;background:none;color:var(--orange);font-weight:800}.trend,.panel,.result,.empty{background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 4px 15px rgba(16,34,61,.04)}.trend>div{display:grid;grid-template-columns:30px 1fr auto;gap:10px;padding:12px 15px;border-bottom:1px solid var(--line)}.trend>div:last-child{border:0}.trend b{color:var(--orange)}.muted{color:var(--muted)}.panel{padding:17px;margin-bottom:13px}.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:13px}.field.full{grid-column:1/-1}.field input,.field select,.field textarea{padding:10px;border:1px solid #cbd3df;border-radius:8px;background:#fff;font-weight:400}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{border:0;border-radius:8px;padding:10px 14px;background:var(--navy);color:#fff;font-weight:800}.btn.orange{background:var(--orange)}.btn.green{background:var(--green)}.btn.light{background:#eef2f6;color:var(--navy)}.btn.danger{background:#fee4e2;color:var(--danger)}.filters{display:none;margin-top:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}.filters.open{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.product{display:grid;grid-template-columns:82px 1fr auto;gap:13px;align-items:center;padding:13px;background:#fff;border:1px solid var(--line);border-radius:12px;margin:8px 0}.photo{width:82px;height:82px;border-radius:10px;background:#eef2f6;object-fit:cover;display:grid;place-items:center;font-size:27px;overflow:hidden}.photo img{width:100%;height:100%;object-fit:cover}.product h3{margin:0 0 4px;color:var(--navy);font-size:16px}.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}.tag{background:#eef2f6;color:#465467;border-radius:20px;padding:4px 7px;font-size:11px;font-weight:700}.companybox{border-top:1px solid var(--line);margin-top:8px;padding-top:8px;color:#334155}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px}.kpi small{display:block;color:var(--muted)}.kpi strong{display:block;color:var(--orange);font-size:27px;margin-top:4px}.notice{border-left:4px solid var(--orange);background:#fff8f1;border-radius:8px;padding:11px 13px}.empty{text-align:center;padding:30px;color:var(--muted)}
+.modal{display:none;position:fixed;inset:0;background:#0007;z-index:50;align-items:center;justify-content:center;padding:18px}.modal.open{display:flex}.box{background:#fff;border-radius:14px;width:min(620px,100%);max-height:90vh;overflow:auto;padding:19px;box-shadow:0 20px 70px #0004}.toast{position:fixed;right:18px;bottom:18px;background:var(--navy);color:#fff;padding:12px 15px;border-radius:9px;display:none;z-index:80}.status{font-size:12px;color:var(--muted);margin-left:auto}
+@media(max-width:900px){#side{display:none}#top{margin-left:0;padding:0 10px}.menu,.topbrand{display:block}.topbrand{display:block}.company{display:none}main{margin-left:0;padding:15px 10px}.grid3,.kpis{grid-template-columns:1fr}.welcome{padding:21px}.mark{width:65px;height:65px;font-size:32px}.form{grid-template-columns:1fr}.filters.open{grid-template-columns:1fr}.product{grid-template-columns:68px 1fr}.product .actions{grid-column:1/-1}.photo{width:68px;height:68px}}
+</style>
+</head>
+<body>
+<aside id="side">
+  <div class="brand">👜 Ache<b>Food</b></div>
+  <div class="profile"><div class="avatar" id="avatar">A</div><div><b id="userName">Conta demonstração</b><small id="userRole">Comprador</small></div></div>
+  <nav class="nav">
+    <button data-view="home">⌂ &nbsp;Início</button>
+    <button data-view="search">⌕ &nbsp;Buscar produtos</button>
+    <button data-view="wanted">◎ &nbsp;Procurar para mim</button>
+    <button data-view="catalog">▦ &nbsp;Meu catálogo</button>
+    <button data-view="register">＋ &nbsp;Cadastrar produto</button>
+    <button data-view="import">⇧ &nbsp;Importar catálogo</button>
+    <button data-view="opportunities">◉ &nbsp;Oportunidades <em id="oppCount">0</em></button>
+    <button data-view="connections">♧ &nbsp;Conexões</button>
+    <button data-view="dashboard">▤ &nbsp;Painel</button>
+    <button data-view="mycompany">⌂ &nbsp;Minha empresa</button>
+    <button data-view="plans">◇ &nbsp;Planos</button>
+  </nav>
+  <div class="sidebottom"><button class="nav" style="width:100%;border:0;background:transparent;color:#dbe5f2;text-align:left;padding:10px">? &nbsp;Ajuda e suporte</button></div>
+</aside>
+
+<header id="top">
+  <button class="menu" id="menuBtn">☰</button><div class="topbrand">Ache<b>Food</b></div>
+  <div class="search"><input id="globalSearch" placeholder="O que você está procurando?"><button id="globalSearchBtn">🔍</button></div>
+  <button class="filter" id="filterBtn">⚙ Filtros</button>
+  <button class="company" id="companyBtn">🏢 <span id="companyNameTop">Minha empresa</span></button>
+</header>
+
+<main>
+<section id="home" class="view active">
+  <div class="welcome"><div><div class="eyebrow">VOCÊ PROCURA. A GENTE ENCONTRA.</div><h1>Encontre produtos <span>sem complicação.</span></h1><p>Pesquise, descubra fornecedores próximos e conecte-se diretamente.</p></div><div class="mark">🔎</div></div>
+  <div class="grid3">
+    <div class="quick orange" data-go="search"><div class="icon">🔎</div><strong>Buscar produtos</strong><small>Produto, marca, categoria ou empresa.</small></div>
+    <div class="quick green" data-go="wanted"><div class="icon">🙋</div><strong>Procurar para mim</strong><small>Não encontrou? Crie uma demanda.</small></div>
+    <div class="quick blue" data-go="opportunities"><div class="icon">🎯</div><strong>Oportunidades</strong><small>Veja o que os compradores estão procurando.</small></div>
+  </div>
+  <div class="section"><div class="head"><h2>Mais procurados da semana</h2><button class="link" data-go="search">Ver tudo →</button></div><div class="trend" id="trends"></div></div>
+  <div class="section"><div class="notice"><b>Regra do AcheFood:</b> preços não são públicos. O comprador encontra, conecta e negocia diretamente com a empresa.</div></div>
+</section>
+
+<section id="search" class="view">
+  <div class="head"><div><h2>Buscar produtos</h2><div class="muted">Encontre produtos e empresas próximas.</div></div><span class="status" id="searchStatus">Modo demonstração</span></div>
+  <div class="panel">
+    <div class="form">
+      <div class="field"><label>Produto, marca, categoria ou empresa</label><input id="searchTerm" placeholder="Ex.: mussarela, bacon, Scala"></div>
+      <div class="field"><label>Raio</label><select id="searchRadius"><option value="5">5 km</option><option value="10" selected>10 km</option><option value="25">25 km</option><option value="50">50 km</option><option value="100">100 km</option></select></div>
+    </div>
+    <div id="filterPanel" class="filters">
+      <div class="field"><label>Categoria</label><select id="filterCategory"><option value="">Todas</option><option>Laticínios</option><option>Frios</option><option>Mercearia</option><option>Carnes</option><option>Bebidas</option></select></div>
+      <div class="field"><label>Validade mínima</label><input id="filterExpiry" type="date"></div>
+      <div class="field"><label>Unidade</label><select id="filterUnit"><option value="">Todas</option><option>kg</option><option>box</option><option>un</option></select></div>
+    </div>
+    <div class="actions"><button class="btn orange" id="searchBtn">🔎 Buscar</button><button class="btn light" id="clearSearch">Limpar</button></div>
+  </div>
+  <div id="searchResults"></div>
+</section>
+
+<section id="wanted" class="view">
+  <div class="head"><div><h2>Procurar para mim</h2><div class="muted">Crie uma procura quando o produto não apareceu.</div></div></div>
+  <div class="panel"><div class="form">
+    <div class="field"><label>Produto procurado</label><input id="wantedProduct" placeholder="Ex.: Mussarela Três Vales"></div>
+    <div class="field"><label>Marca (opcional)</label><input id="wantedBrand" placeholder="Ex.: Três Vales"></div>
+    <div class="field"><label>Cidade/região</label><input id="wantedCity" value="Campinas - SP"></div>
+    <div class="field"><label>Raio</label><select id="wantedRadius"><option>10 km</option><option>25 km</option><option>50 km</option><option>100 km</option></select></div>
+  </div><div class="actions"><button class="btn orange" id="createWanted">Criar procura</button></div></div>
+  <div class="head"><h2>Minhas procuras</h2></div><div id="wantedList"></div>
+</section>
+
+<section id="catalog" class="view">
+  <div class="head"><div><h2>Meu catálogo</h2><div class="muted">Produtos que sua empresa disponibiliza.</div></div><button class="btn orange" data-go="register">＋ Cadastrar produto</button></div>
+  <div class="panel"><div class="between"><b>Plano atual</b><span class="tag" id="planCounter">Teste liberado</span></div><div class="muted" style="margin-top:6px">Todos os recursos ficam desbloqueados durante o piloto. O contador permanece para validação dos planos.</div></div>
+  <div id="catalogList"></div>
+</section>
+
+<section id="register" class="view">
+  <div class="head"><div><h2>Cadastrar produto</h2><div class="muted">Informações objetivas para facilitar a descoberta.</div></div></div>
+  <div class="panel"><div class="form">
+    <div class="field"><label>Produto *</label><input id="pName"></div>
+    <div class="field"><label>Marca</label><input id="pBrand"></div>
+    <div class="field"><label>Categoria *</label><select id="pCategory"><option>Laticínios</option><option>Frios</option><option>Mercearia</option><option>Carnes</option><option>Bebidas</option></select></div>
+    <div class="field"><label>Unidade de venda *</label><select id="pUnit"><option>kg</option><option>box</option><option>un</option></select></div>
+    <div class="field"><label>Kg por peça</label><input id="pKgPiece" type="number" step=".001" placeholder="Ex.: 4.2"></div>
+    <div class="field"><label>Kg por caixa</label><input id="pKgBox" type="number" step=".001" placeholder="Ex.: 20"></div>
+    <div class="field full"><label>Código de barras (digite ou use câmera)</label><div style="display:flex;gap:7px"><input id="pBarcode" style="flex:1"><button class="btn light" id="scanBarcode">📷 Ler câmera</button></div><small class="muted">A leitura por câmera depende do navegador/dispositivo. A digitação manual funciona sempre.</small></div>
+    <div class="field"><label>Validade *</label><input id="pExpiry" type="date"></div>
+    <div class="field"><label>Foto</label><input id="pPhoto" type="file" accept="image/*"></div>
+  </div><div class="actions"><button class="btn green" id="saveProduct">Salvar produto</button><button class="btn light" data-go="catalog">Cancelar</button></div></div>
+</section>
+
+<section id="import" class="view">
+  <div class="head"><div><h2>Importar catálogo</h2><div class="muted">Importe uma planilha CSV com os campos do AcheFood.</div></div></div>
+  <div class="panel"><div class="notice"><b>Colunas aceitas:</b> produto, marca, categoria, unidade, kg_peca, kg_caixa, codigo_barras, validade, foto.</div><div class="actions"><input id="csvFile" type="file" accept=".csv,text/csv"><button class="btn orange" id="importCsv">Importar</button></div><div id="importResult" class="muted" style="margin-top:10px"></div></div>
+</section>
+
+<section id="opportunities" class="view">
+  <div class="head"><div><h2>Oportunidades</h2><div class="muted">Demandas de compradores que podem ser atendidas pelo seu catálogo.</div></div><button class="btn light" id="refreshOpp">↻ Atualizar</button></div>
+  <div id="oppList"></div>
+</section>
+
+<section id="connections" class="view">
+  <div class="head"><div><h2>Conexões</h2><div class="muted">Empresas com quem você iniciou contato.</div></div></div>
+  <div id="connectionsList"></div>
+</section>
+
+<section id="dashboard" class="view">
+  <div class="head"><div><h2>Painel</h2><div class="muted">Visão rápida da atividade do seu catálogo.</div></div></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="panel" style="margin-top:12px"><h3 style="margin-top:0">Como funciona</h3><p class="muted">1. Cadastre seus produtos. 2. O comprador encontra pelo produto, marca ou categoria. 3. Se ele não encontrar, cria uma procura. 4. Sua empresa vê a oportunidade e pode clicar em <b>EU TENHO</b>. 5. O contato acontece diretamente.</p></div>
+</section>
+
+<section id="mycompany" class="view">
+  <div class="head"><div><h2>Minha empresa</h2><div class="muted">Uma conta corresponde a uma empresa.</div></div></div>
+  <div class="panel"><div class="form">
+    <div class="field"><label>Razão social</label><input id="cLegal"></div>
+    <div class="field"><label>Nome fantasia</label><input id="cTrade"></div>
+    <div class="field"><label>CNPJ</label><input id="cCnpj"></div>
+    <div class="field"><label>Telefone/WhatsApp</label><input id="cPhone"></div>
+    <div class="field full"><label>Endereço</label><input id="cAddress"></div>
+    <div class="field"><label>Cidade</label><input id="cCity"></div>
+    <div class="field"><label>Tipo</label><select id="cType"><option>Distribuidor/Atacado</option><option>Indústria</option><option>Varejo</option><option>Representante comercial</option><option>Consumidor</option></select></div>
+  </div><div class="actions"><button class="btn green" id="saveCompany">Salvar empresa</button></div></div>
+</section>
+
+<section id="plans" class="view">
+  <div class="head"><div><h2>Planos</h2><div class="muted">Estrutura preparada para monetização.</div></div></div>
+  <div class="grid3">
+    <div class="panel"><h3>Grátis</h3><p class="muted">Presença básica e descoberta.</p><b>Para validar o marketplace</b></div>
+    <div class="panel"><h3>Profissional</h3><p class="muted">Mais visibilidade e recursos comerciais.</p><b>Para empresas ativas</b></div>
+    <div class="panel"><h3>Empresa</h3><p class="muted">Recursos avançados e inteligência de mercado.</p><b>Para operações maiores</b></div>
+  </div>
+  <div class="notice">Durante o piloto, <b>todos os recursos estão liberados</b>. Nenhum cliente fica bloqueado por limite técnico.</div>
+</section>
+</main>
+
+<div class="modal" id="modal"><div class="box"><div class="head"><h2 id="modalTitle">Contato</h2><button class="btn light" id="closeModal">Fechar</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DEMO_KEY='achefood_v51_demo';
+const CONFIG={supabaseUrl:'',supabaseAnonKey:''}; // Preencha ou use supabase-config.js
+let supabaseClient=null, state=loadState(), currentUser={id:'demo-user',name:'Conta demonstração',role:'Comprador'};
+
+function loadState(){const raw=localStorage.getItem(DEMO_KEY);if(raw)return JSON.parse(raw);return {
+ company:{legal:'AcheFood Demo Ltda.',trade:'Empresa Demonstração',cnpj:'00.000.000/0001-00',phone:'(19) 99999-0000',address:'Av. Exemplo, 100',city:'Campinas - SP',type:'Distribuidor/Atacado'},
+ products:[
+  {id:1,name:'Mussarela',brand:'Três Vales',category:'Laticínios',unit:'kg',kgPiece:4.2,kgBox:21,barcode:'789000000001',expiry:'2026-10-15',photo:''},
+  {id:2,name:'Bacon Paleta Fatiada',brand:'Sabor Mineiro',category:'Frios',unit:'kg',kgPiece:1,kgBox:20,barcode:'789000000002',expiry:'2026-11-02',photo:''},
+  {id:3,name:'Requeijão Cremoso',brand:'Scala',category:'Laticínios',unit:'kg',kgPiece:1.8,kgBox:10.8,barcode:'789000000003',expiry:'2026-09-30',photo:''}
+ ],
+ wanted:[{id:101,product:'Queijo Prato',brand:'',city:'Campinas - SP',radius:'25 km',status:'Procurando',date:'02/09/2026'}],
+ opp:[{id:201,product:'Mussarela',brand:'Três Vales',city:'Campinas - SP',radius:'25 km',buyer:'Supermercado Exemplo',match:1,status:'Nova'}],
+ connections:[],
+ searches:12
+};}
+function saveState(){localStorage.setItem(DEMO_KEY,JSON.stringify(state))}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(window._toast);window._toast=setTimeout(()=>t.style.display='none',2300)}
+function $(id){return document.getElementById(id)}
+function go(view){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(view).classList.add('active');document.querySelectorAll('.nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));if(view==='home')renderHome();if(view==='search')runSearch();if(view==='wanted')renderWanted();if(view==='catalog')renderCatalog();if(view==='opportunities')renderOpp();if(view==='connections')renderConnections();if(view==='dashboard')renderDashboard();if(view==='mycompany')renderCompany();window.scrollTo({top:0,behavior:'smooth'})}
+function init(){document.querySelectorAll('[data-go]').forEach(e=>e.onclick=()=>go(e.dataset.go));document.querySelectorAll('.nav button[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));
+$('globalSearchBtn').onclick=()=>{ $('searchTerm').value=$('globalSearch').value;go('search');runSearch()};$('globalSearch').onkeydown=e=>{if(e.key==='Enter')$('globalSearchBtn').click()};$('filterBtn').onclick=()=>$('filterPanel').classList.toggle('open');$('searchBtn').onclick=runSearch;$('clearSearch').onclick=()=>{$('searchTerm').value='';$('globalSearch').value='';runSearch()};
+$('createWanted').onclick=createWanted;$('saveProduct').onclick=saveProduct;$('importCsv').onclick=importCsv;$('refreshOpp').onclick=renderOpp;$('saveCompany').onclick=saveCompany;$('closeModal').onclick=closeModal;$('modal').onclick=e=>{if(e.target.id==='modal')closeModal()};$('menuBtn').onclick=()=>{const side=$('side');side.style.display=side.style.display==='flex'?'none':'flex'};
+fillUser();renderHome();renderCompany();go('home');}
+function fillUser(){const n=state.company.trade||'Minha empresa';$('userName').textContent=n;$('userRole').textContent=state.company.type||'Empresa';$('avatar').textContent=n.trim()[0]?.toUpperCase()||'A';$('companyNameTop').textContent=n}
+function renderHome(){const arr=state.products.slice(0,5);$('trends').innerHTML=arr.length?arr.map((p,i)=>`<div><b>${i+1}</b><div><strong>${esc(p.name)}</strong><small class="muted"> · ${esc(p.brand||p.category)}</small></div><span class="muted">${p.category}</span></div>`).join(''):'<div class="empty">Cadastre produtos para começar.</div>';$('oppCount').textContent=state.opp.filter(x=>x.status!=='Atendida').length}
+function runSearch(){const term=($('searchTerm').value||'').toLowerCase().trim(),cat=$('filterCategory').value,unit=$('filterUnit').value,exp=$('filterExpiry').value;let ps=state.products.filter(p=>!term||[p.name,p.brand,p.category,state.company.trade].join(' ').toLowerCase().includes(term)).filter(p=>!cat||p.category===cat).filter(p=>!unit||p.unit===unit).filter(p=>!exp||p.expiry>=exp);state.searches++;saveState();$('searchResults').innerHTML=ps.length?ps.map(productCard).join(''):`<div class="empty"><b>Nenhum produto encontrado.</b><p>Você pode criar uma procura para que empresas compatíveis recebam a oportunidade.</p><button class="btn orange" onclick="go('wanted')">Procurar para mim</button></div>`; $('searchStatus').textContent=`${ps.length} resultado(s) · raio ${$('searchRadius').value} km`}
+function productCard(p,withConnect=true){return `<div class="product"><div class="photo">${p.photo?`<img src="${p.photo}" alt="">`:'📦'}</div><div><h3>${esc(p.name)}</h3><div class="muted">${esc(p.brand||'Marca não informada')} · ${esc(p.category)}</div><div class="tags"><span class="tag">${p.unit}</span>${p.kgPiece?`<span class="tag">${p.kgPiece} kg/peça</span>`:''}${p.kgBox?`<span class="tag">${p.kgBox} kg/caixa</span>`:''}<span class="tag">Validade ${formatDate(p.expiry)}</span></div><div class="companybox"><b>${esc(state.company.trade)}</b> · ${esc(state.company.city)}<br>${esc(state.company.phone)}</div></div><div class="actions">${withConnect?`<button class="btn orange" onclick="contactCompany()">Conectar</button>`:''}</div></div>`}
+function contactCompany(){state.connections.push({id:Date.now(),company:state.company.trade,date:new Date().toLocaleDateString('pt-BR'),phone:state.company.phone});saveState();showContact();renderConnections()}
+function showContact(){openModal('Contato da empresa',`<p><b>${esc(state.company.trade)}</b></p><p>Telefone/WhatsApp: <b>${esc(state.company.phone)}</b></p><p>Endereço: ${esc(state.company.address)}, ${esc(state.company.city)}</p><p>CNPJ: ${esc(state.company.cnpj)}</p><div class="notice">Preços não são exibidos publicamente. A negociação acontece diretamente entre as empresas.</div>`)}
+function renderWanted(){$('wantedList').innerHTML=state.wanted.length?state.wanted.slice().reverse().map(w=>`<div class="panel"><div class="head"><div><b>${esc(w.product)}</b>${w.brand?` · ${esc(w.brand)}`:''}</div><span class="tag">${esc(w.status)}</span></div><div class="muted">${esc(w.city)} · raio ${esc(w.radius)} · ${esc(w.date)}</div></div>`).join(''):'<div class="empty">Nenhuma procura criada.</div>'}
+function createWanted(){const product=$('wantedProduct').value.trim();if(!product){toast('Informe o produto procurado.');return}state.wanted.push({id:Date.now(),product,brand:$('wantedBrand').value.trim(),city:$('wantedCity').value.trim(),radius:$('wantedRadius').value,status:'Procurando',date:new Date().toLocaleDateString('pt-BR')});saveState();$('wantedProduct').value='';$('wantedBrand').value='';renderWanted();toast('Procura criada. Empresas compatíveis poderão vê-la.')}
+function renderCatalog(){$('catalogList').innerHTML=state.products.length?state.products.map(p=>productCard(p,false)).join(''):'<div class="empty">Seu catálogo está vazio.</div>'}
+function saveProduct(){const name=$('pName').value.trim(),cat=$('pCategory').value,expiry=$('pExpiry').value;if(!name||!expiry){toast('Preencha produto e validade.');return}const file=$('pPhoto').files[0];const done=photo=>{state.products.push({id:Date.now(),name,brand:$('pBrand').value.trim(),category:cat,unit:$('pUnit').value,kgPiece:Number($('pKgPiece').value)||null,kgBox:Number($('pKgBox').value)||null,barcode:$('pBarcode').value.trim(),expiry,photo:photo||''});saveState();['pName','pBrand','pKgPiece','pKgBox','pBarcode','pExpiry'].forEach(id=>$(id).value='');$('pPhoto').value='';renderHome();renderCatalog();toast('Produto cadastrado.');go('catalog')};if(file){const r=new FileReader();r.onload=()=>done(r.result);r.readAsDataURL(file)}else done('')}
+async function importCsv(){const file=$('csvFile').files[0];if(!file){toast('Selecione um CSV.');return}const text=await file.text();const lines=text.split(/\r?\n/).filter(Boolean);if(lines.length<2){toast('CSV vazio.');return}const sep=lines[0].includes(';')?';':',';const headers=lines[0].split(sep).map(x=>x.trim().toLowerCase());let count=0;for(const line of lines.slice(1)){const cols=line.split(sep).map(x=>x.trim());const row={};headers.forEach((h,i)=>row[h]=cols[i]||'');if(row.produto&&row.validade){state.products.push({id:Date.now()+count,name:row.produto,brand:row.marca||'',category:row.categoria||'Outros',unit:row.unidade||'un',kgPiece:Number(row.kg_peca)||null,kgBox:Number(row.kg_caixa)||null,barcode:row.codigo_barras||'',expiry:row.validade,photo:row.foto||''});count++}}saveState();$('importResult').textContent=`${count} produto(s) importado(s).`;renderCatalog();renderHome();toast(`${count} produto(s) importado(s).`)}
+function renderOpp(){const opp=state.opp.filter(o=>o.status!=='Atendida');$('oppList').innerHTML=opp.length?opp.map(o=>{const p=state.products.find(x=>x.id===o.match);return `<div class="panel"><div class="head"><div><h3 style="margin:0">${esc(o.product)}</h3><div class="muted">${esc(o.brand||'Marca não informada')} · ${esc(o.city)} · raio ${esc(o.radius)}</div></div><span class="tag">${esc(o.status)}</span></div><div style="margin:9px 0"><b>Comprador:</b> ${esc(o.buyer)}</div>${p?`<div class="notice"><b>Você tem:</b> ${esc(p.name)} · ${esc(p.brand||'')} · ${p.unit} · validade ${formatDate(p.expiry)}</div>`:'<div class="muted">Nenhum item correspondente no catálogo.</div>'}<div class="actions">${p?`<button class="btn green" onclick="answerOpp(${o.id})">EU TENHO</button>`:''}</div></div>`}).join(''):'<div class="empty">Nenhuma nova oportunidade no momento. Clique em Atualizar para verificar novamente.</div>';$('oppCount').textContent=opp.length}
+function answerOpp(id){const o=state.opp.find(x=>x.id===id);if(!o)return;o.status='Atendida';state.connections.push({id:Date.now(),company:o.buyer,date:new Date().toLocaleDateString('pt-BR'),phone:'Contato liberado após conexão'});saveState();renderOpp();renderConnections();toast('Resposta enviada: EU TENHO.')}
+function renderConnections(){$('connectionsList').innerHTML=state.connections.length?state.connections.slice().reverse().map(c=>`<div class="panel"><div class="head"><b>${esc(c.company)}</b><span class="tag">${esc(c.date)}</span></div><div class="muted">${esc(c.phone)}</div></div>`).join(''):'<div class="empty">Você ainda não possui conexões.</div>'}
+function renderDashboard(){$('kpis').innerHTML=[['Produtos',state.products.length],['Procuras criadas',state.wanted.length],['Oportunidades',state.opp.length],['Conexões',state.connections.length]].map(x=>`<div class="kpi"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('')}
+function renderCompany(){const c=state.company;[['cLegal',c.legal],['cTrade',c.trade],['cCnpj',c.cnpj],['cPhone',c.phone],['cAddress',c.address],['cCity',c.city]].forEach(([id,v])=>$(id).value=v);$('cType').value=c.type;fillUser()}
+function saveCompany(){state.company={legal:$('cLegal').value.trim(),trade:$('cTrade').value.trim()||'Minha empresa',cnpj:$('cCnpj').value.trim(),phone:$('cPhone').value.trim(),address:$('cAddress').value.trim(),city:$('cCity').value.trim(),type:$('cType').value};saveState();fillUser();toast('Dados da empresa salvos.')}
+function openModal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modal').classList.add('open')}function closeModal(){$('modal').classList.remove('open')}
+function formatDate(s){if(!s)return'—';const p=s.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>

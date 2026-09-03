@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  --deep-navy: #031b35;
+  --navy: #06254a;
+  --orange: #ff6a00;
+  --orange-hover: #e85f00;
+  --bg: #f7f9fc;
+  --surface: #ffffff;
+  --text: #10213a;
+  --muted: #667085;
+  --success: #16a34a;
+  --border: #e6eaf0;
+  --blue: #0b6ef3;
+  --purple: #7c3aed;
+  --shadow: 0 6px 22px rgba(16, 33, 58, 0.07);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, "Segoe UI", Arial, sans-serif; }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid rgba(11, 110, 243, .35); outline-offset: 3px; }
+.container { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+.af-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); }
+.af-btn { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 24px; border: 0; border-radius: 8px; font-weight: 750; cursor: pointer; transition: .2s ease; }
+.af-btn-primary { color: #fff; background: var(--orange); box-shadow: 0 8px 18px rgba(255, 106, 0, .2); }
+.af-btn-primary:hover { background: var(--orange-hover); transform: translateY(-1px); }
+.af-btn-secondary { color: var(--text); background: #fff; border: 1px solid #a9b3c2; }
+.section-title { font-size: clamp(28px, 4vw, 38px); line-height: 1.12; text-align: center; margin: 0 0 42px; letter-spacing: -.8px; }
+.section-title span, .accent { color: var(--orange); }
+.eyebrow { display: inline-flex; color: var(--orange); border: 1px solid #ffb27d; background: #fff8f2; border-radius: 999px; padding: 7px 12px; font-size: 11px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; }
+.muted { color: var(--muted); }
+
+@media (max-width: 767px) {
+  .container { width: min(100% - 32px, 560px); }
+  .af-btn { width: 100%; }
+  .section-title { margin-bottom: 28px; }
+}

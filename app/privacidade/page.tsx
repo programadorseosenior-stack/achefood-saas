@@ -1,0 +1,1 @@
+export default function Privacidade(){return <main className="container" style={{paddingBlock:60}}><h1>Política de Privacidade</h1><p className="muted">Documento de privacidade pendente de validação jurídica e adequação à LGPD antes do lançamento público.</p></main>}
