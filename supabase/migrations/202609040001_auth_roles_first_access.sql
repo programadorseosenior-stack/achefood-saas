@@ -10,7 +10,7 @@ alter table public.profiles add column if not exists first_access_completed_at t
 
 create or replace function public.handle_new_user() returns trigger
 language plpgsql security definer set search_path='' as $$
-declare is_initial_admin boolean := lower(new.email) = 'achefood91@gmail.com';
+declare is_initial_admin boolean := lower(new.email) = 'programador.seosenior@gmail.com';
 begin
   insert into public.profiles(id,email,first_name,last_name,full_name,profile_type,role,status)
   values(
@@ -40,7 +40,7 @@ declare uid uuid := auth.uid(); verified_email text;
 begin
   if uid is null then raise exception 'Autenticação necessária' using errcode='42501'; end if;
   select lower(email) into verified_email from auth.users where id=uid and email_confirmed_at is not null;
-  if verified_email is distinct from 'achefood91@gmail.com' then raise exception 'Acesso não autorizado' using errcode='42501'; end if;
+  if verified_email is distinct from 'programador.seosenior@gmail.com' then raise exception 'Acesso não autorizado' using errcode='42501'; end if;
   if not exists(select 1 from public.admin_members where user_id=uid and role='super_admin' and status='pending') then
     raise exception 'Convite de primeiro acesso inválido' using errcode='42501';
   end if;
