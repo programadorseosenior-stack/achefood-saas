@@ -54,3 +54,6 @@ pnpm build
 - A migration ainda não foi aplicada a um projeto Supabase real nesta entrega.
 - Busca, catálogo, oportunidades, conexões e Admin possuem rotas reservadas, mas as fatias funcionais completas continuam no roadmap.
 - Termos e Política de Privacidade exigem revisão jurídica antes de produção.
+# Design lock
+
+`DESIGN_LOCKED = true`: Home e Login têm Design System e layout aprovados. Mudanças posteriores devem preservar composição, identidade, conteúdo e estado final; motion é uma camada progressiva e acessível.

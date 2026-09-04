@@ -72,3 +72,27 @@
   .wanted-steps article { grid-template-columns: 65px 1fr; }.demo-board { padding: 14px; }.demo-kpis { grid-template-columns: 1fr 1fr; }.demo-kpis span { padding: 11px; }.demo-chart { padding: 16px; }.plan-card { padding: 28px; }
   .final-cta { margin-bottom: 0; border-radius: 0; padding: 42px 24px; flex-direction: column; text-align: center; gap: 20px; }.final-cta h2 { font-size: 28px; }.landing footer .container { flex-direction: column; gap: 17px; text-align: center; }
 }
+.marketing-header a,
+.hero-actions a,
+.supplier-card,
+.commercial-card,
+.final-cta a {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .marketing-header nav a:hover { transform: translateY(-2px); }
+  .marketing-header .af-btn:hover,
+  .hero-actions .af-btn:hover,
+  .final-cta .af-btn:hover { transform: translateY(-2px) scale(1.015); }
+  .supplier-card:hover { transform: translateY(-4px) scale(1.01); }
+  .commercial-card:hover { transform: translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing *, .auth-page * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

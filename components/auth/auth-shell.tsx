@@ -1,9 +1,15 @@
+"use client";
+
 import { AcheFoodLogo } from "@/components/brand/achefood-logo";
 import { Handshake, MapPin, Search, Users } from "lucide-react";
+import { useRef } from "react";
+import { usePageMotion } from "@/lib/motion/use-page-motion";
 
 export function AuthShell({ children }: { children: React.ReactNode }) {
+  const motionScope = useRef<HTMLElement>(null);
+  usePageMotion(motionScope, "login");
   return (
-    <main className="auth-page">
+    <main className="auth-page" ref={motionScope}>
       <section className="auth-brand-panel">
         <div className="auth-brand-header">
           <AcheFoodLogo />

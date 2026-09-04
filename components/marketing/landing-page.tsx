@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { ArrowRight, Building2, Check, ChevronDown, Handshake, MapPin, Menu, PackageSearch, Search, ShieldCheck, Store, Target, Users } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { AcheFoodLogo } from "@/components/brand/achefood-logo";
 import { HomePlans } from "@/components/commercial/plan-display";
 import type { Plan } from "@/lib/commercial/types";
+import { usePageMotion } from "@/lib/motion/use-page-motion";
 
 const suppliers = [
   ["Laticínios Bom Sabor", "Maringá - PR", "🥛", "Entrega para todo Brasil"],
@@ -15,6 +16,8 @@ const suppliers = [
 ];
 
 export function LandingPage({ plans }: { plans: Plan[] }) {
+  const motionScope = useRef<HTMLDivElement>(null);
+  usePageMotion(motionScope, "home");
   const [menuOpen, setMenuOpen] = useState(false);
   const [term, setTerm] = useState("");
   const filtered = useMemo(
@@ -23,7 +26,7 @@ export function LandingPage({ plans }: { plans: Plan[] }) {
   );
 
   return (
-    <div className="landing">
+    <div className="landing" ref={motionScope}>
       <header className="marketing-header">
         <div className="container header-inner">
           <AcheFoodLogo />
