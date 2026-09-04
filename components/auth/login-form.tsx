@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { useState } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export function LoginForm() {
+  const params = useSearchParams();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,7 +32,9 @@ export function LoginForm() {
         .select("role,status")
         .eq("user_id", authData.user.id)
         .maybeSingle();
-      window.location.href = admin?.status === "active" ? "/admin/dashboard" : admin ? "/admin/primeiro-acesso" : "/app/dashboard";
+      const requestedNext = params.get("next");
+      const safeNext = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : null;
+      window.location.href = safeNext ?? (admin?.status === "active" ? "/admin/dashboard" : admin ? "/admin/primeiro-acesso" : "/app/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível entrar.");
     } finally {
@@ -42,9 +46,11 @@ export function LoginForm() {
     setError("");
     try {
       const supabase = createClient();
+      const requestedNext = params.get("next");
+      const safeNext = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/app/dashboard";
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: `${location.origin}/auth/callback` },
+        options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}` },
       });
       if (oauthError) throw oauthError;
     } catch (err) {
