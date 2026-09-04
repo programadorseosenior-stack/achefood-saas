@@ -39,10 +39,11 @@ function homeMotion(root: HTMLElement, isDesktop: boolean) {
   const timeline = gsap.timeline({ defaults: { ease: MOTION.easeOut } });
 
   timeline
-    .from(".marketing-header .brand", { autoAlpha: 0, x: -20, scale: 0.96, duration: 0.6 })
+    .from(".marketing-header .brand-logo", { autoAlpha: 0, x: -20, scale: 0.96, duration: 0.6 })
     .from(".marketing-header nav > *, .header-actions > *", { autoAlpha: 0, y: -12, duration: MOTION.normal, stagger: 0.06 }, 0.08)
-    .from(".hero .eyebrow", { autoAlpha: 0, y: -8, scale: 0.96, duration: 0.5 }, 0.2)
-    .from(split?.lines ?? [], { autoAlpha: 0, yPercent: 110, duration: MOTION.medium, stagger: 0.1 }, 0.28)
+    .from(".hero .eyebrow", { autoAlpha: 0, y: -8, scale: 0.96, duration: 0.5 }, 0.2);
+  if (split) timeline.from(split.lines, { autoAlpha: 0, yPercent: 110, duration: MOTION.medium, stagger: 0.1 }, 0.28);
+  timeline
     .from(".hero-copy > p", { autoAlpha: 0, y: 20, duration: 0.6 }, 0.6)
     .from(".hero-actions > *", { autoAlpha: 0, y: 15, duration: 0.55, stagger: 0.08 }, 0.7)
     .from(".product-preview", { autoAlpha: 0, x: isDesktop ? 35 : 0, y: isDesktop ? 0 : 30, scale: 0.96, duration: 1 }, 0.78)
@@ -59,9 +60,9 @@ function loginMotion(root: HTMLElement, isDesktop: boolean) {
   const split = title ? SplitText.create(title, { type: "lines", mask: "lines", aria: "auto" }) : null;
   const timeline = gsap.timeline({ defaults: { ease: MOTION.easeOut } });
 
+  timeline.from(".auth-brand-header .brand-logo", { autoAlpha: 0, y: -15, duration: 0.6 });
+  if (split) timeline.from(split.lines, { autoAlpha: 0, yPercent: 110, duration: 0.72, stagger: 0.1 }, 0.1);
   timeline
-    .from(".auth-brand-header .brand", { autoAlpha: 0, y: -15, duration: 0.6 })
-    .from(split?.lines ?? [], { autoAlpha: 0, yPercent: 110, duration: 0.72, stagger: 0.1 }, 0.1)
     .from(".auth-brand-copy .orange-line, .auth-brand-copy p", { autoAlpha: 0, y: 15, duration: 0.55, stagger: 0.07 }, 0.25)
     .from(".map-core", { autoAlpha: 0, scale: 0.65, duration: 0.6, ease: "back.out(1.4)" }, 0.35)
     .from(".network-node", { autoAlpha: 0, scale: 0, duration: 0.4, stagger: 0.07 }, 0.4)
