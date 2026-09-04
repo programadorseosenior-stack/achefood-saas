@@ -1,217 +1,32 @@
 "use client";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import Link from "next/link";
-import {
-  BarChart3,
-  Bell,
-  Building2,
-  ChevronDown,
-  CircleHelp,
-  FileText,
-  Flame,
-  Handshake,
-  Home,
-  Import,
-  MapPin,
-  Menu,
-  MessageCircle,
-  Package,
-  Search,
-  Settings,
-  Store,
-  Target,
-  Users,
-} from "lucide-react";
-import { useState } from "react";
+import { Bell,Building2,ChevronDown,CircleHelp,Eye,FileText,Flame,Handshake,Home,Import,LogOut,MapPin,Menu,MessageCircle,Package,Search,Store,Target,Users } from "lucide-react";
+import { useRef,useState } from "react";
+import { CartesianGrid,Legend,Line,LineChart,ResponsiveContainer,Tooltip,XAxis,YAxis } from "recharts";
 import { AcheFoodLogo } from "@/components/brand/achefood-logo";
+import { createClient } from "@/lib/supabase/client";
 
-const nav = [
-  [Home, "Início", "/app/dashboard"],
-  [Search, "Buscar produtos", "/app/buscar"],
-  [MapPin, "Perto de mim", "/app/perto-de-mim"],
-  [Target, "Procurar para mim", "/app/procurar-para-mim"],
-  [Flame, "Mais procurados", "/app/mais-procurados"],
-  [Package, "Categorias", "/app/categorias"],
-  [FileText, "Meus pedidos", "/app/pedidos"],
-  [Building2, "Área da empresa", "/app/empresa"],
-  [Store, "Meus produtos", "/app/produtos"],
-  [Import, "Importar catálogo", "/app/importar"],
-  [Target, "Oportunidades", "/app/oportunidades"],
-  [Users, "Conexões", "/app/conexoes"],
-  [MessageCircle, "Mensagens", "/app/mensagens"],
-  [BarChart3, "Planos", "/app/planos"],
-  [CircleHelp, "Ajuda e suporte", "/app/suporte"],
-] as const;
+type Props={user:{name:string;email:string;accountType:string;companyName:string|null};metrics:{views:number;suppliers:number;quotes:number;connections:number}};
+const nav=[[Home,"Início","/app/dashboard"],[Search,"Buscar produtos","/app/buscar"],[MapPin,"Perto de mim","/app/perto-de-mim"],[Target,"Procurar para mim","/app/procurar-para-mim"],[Flame,"Mais procurados","/app/mais-procurados"],[Package,"Categorias","/app/categorias"],[FileText,"Meus pedidos","/app/pedidos"],[Building2,"Área da empresa","/app/empresa"],[Store,"Meus produtos","/app/produtos"],[Import,"Importar catálogo","/app/importar"],[Target,"Oportunidades","/app/oportunidades"],[Users,"Conexões","/app/conexoes"],[MessageCircle,"Mensagens","/app/mensagens"],[Flame,"Planos","/app/planos"],[CircleHelp,"Ajuda e suporte","/app/suporte"]] as const;
+const chartData=["22/04","29/04","06/05","13/05","20/05"].map(date=>({date,visualizacoes:0,cotacoes:0,conexoes:0}));
+const initials=(name:string)=>name.split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]?.toUpperCase()).join("")||"AF";
 
-const metrics = [
-  [Package, "Produtos visualizados", "12.450", "#ff6a00", "#fff1e6"],
-  [Users, "Fornecedores", "3.280", "#22c55e", "#ebf9f0"],
-  [FileText, "Cotações enviadas", "8.760", "#3b82f6", "#edf4ff"],
-  [Handshake, "Conexões realizadas", "42", "#7c3aed", "#f4efff"],
-] as const;
-
-const recentOpportunities = [
-  { name: "Mussarela — 2,5kg", seller: "Supermercado Exemplo", status: "Nova", time: "Há 20 min" },
-  { name: "Bacon — Pacote 1kg", seller: "Mercado Bom Preço", status: "Em análise", time: "Há 45 min" },
-  { name: "Requeijão — 200g", seller: "Restaurante Sabor", status: "Em andamento", time: "Há 1h" },
-];
-
-const popularProducts = [
-  { name: "Mussarela Scaia", searches: 431 },
-  { name: "Bacon Sabor Mineiro", searches: 291 },
-  { name: "Requeijão Scaia", searches: 354 },
-  { name: "Presunto Sadia", searches: 288 },
-  { name: "Queijo Parmesão", searches: 277 },
-];
-
-export function ClientDashboard() {
-  const [drawer, setDrawer] = useState(false);
-
-  return (
-    <div className="dashboard-shell">
-      <aside className={drawer ? "client-sidebar open" : "client-sidebar"}>
-        <AcheFoodLogo />
-
-        <div className="profile">
-          <span>EO</span>
-          <b>
-            Eduardo Oliveira
-            <small>Comprador</small>
-          </b>
-        </div>
-
-        <nav>
-          {nav.map(([Icon, title, href], index) => (
-            <Link className={index === 0 ? "active" : ""} href={href} key={title} onClick={() => setDrawer(false)}>
-              <Icon />
-              {title}
-              {[10, 11, 12].includes(index) && <em>0</em>}
-            </Link>
-          ))}
-        </nav>
-
-        <button type="button">
-          <Settings /> Configurações
-        </button>
-      </aside>
-
-      {drawer && <button className="drawer-backdrop" onClick={() => setDrawer(false)} aria-label="Fechar menu" />}
-
-      <header className="client-top">
-        <button type="button" onClick={() => setDrawer(true)} aria-label="Abrir menu">
-          <Menu />
-        </button>
-
-        <div className="mobile-brand">
-          <AcheFoodLogo />
-        </div>
-
-        <span />
-
-        <button type="button" aria-label="Notificações"><Bell /></button>
-        <button type="button" aria-label="Mensagens"><MessageCircle /></button>
-        <div className="avatar">EO</div>
-        <ChevronDown />
-      </header>
-
-      <main className="dashboard-main">
-        <div className="dashboard-heading">
-          <div>
-            <h1>Olá, Cliente! 👋</h1>
-            <p>Bem-vindo ao AcheFood.</p>
-          </div>
-
-          <button type="button"><FileText /> Últimos 30 dias <ChevronDown /></button>
-        </div>
-
-        <div className="kpi-grid">
-          {metrics.map(([Icon, label, value, color, bg]) => (
-            <article className="af-card" key={String(label)}>
-              <i style={{ color, background: bg }}><Icon /></i>
-              <b>{value}</b>
-              <span>{label}</span>
-            </article>
-          ))}
-        </div>
-
-        <section className="performance af-card">
-          <div className="card-head">
-            <h2>Desempenho</h2>
-            <div>
-              <span className="blue" />Visualizações
-              <span className="orange" />Cotações
-              <span className="green" />Conexões
-            </div>
-          </div>
-
-          <div className="chart-panel">
-            <div className="chart-grid">
-              {[300, 230, 180, 320, 260, 200, 380, 420].map((point, idx) => (
-                <div key={idx} className="chart-col">
-                  <span style={{ height: `${point}px` }} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <div className="dashboard-columns">
-          <section className="af-card data-panel">
-            <div className="panel-title-row">
-              <h3>Produtos mais procurados</h3>
-              <Link href="/app/buscar">Ver todos</Link>
-            </div>
-
-            <ol className="popular-list">
-              {popularProducts.map((product, index) => (
-                <li key={product.name}>
-                  <span className="rank">{index + 1}</span>
-                  <div className="thumb thumb-one" aria-hidden="true" />
-                  <div className="name-block">
-                    <strong>{product.name}</strong>
-                  </div>
-                  <small>{product.searches} buscas</small>
-                </li>
-              ))}
-            </ol>
-          </section>
-
-          <section className="af-card data-panel">
-            <div className="panel-title-row">
-              <h3>Oportunidades recentes</h3>
-              <Link href="/app/oportunidades">Ver todas</Link>
-            </div>
-
-            <ul className="opportunity-list">
-              {recentOpportunities.map((opportunity) => (
-                <li key={opportunity.name}>
-                  <div className="opportunity-product">
-                    <div className="mini-pod" aria-hidden="true" />
-                    <div>
-                      <strong>{opportunity.name}</strong>
-                      <small>{opportunity.seller}</small>
-                    </div>
-                  </div>
-                  <span className={`tag ${opportunity.status.toLowerCase().replace(/\s+/g, "-")}`}>{opportunity.status}</span>
-                  <time>{opportunity.time}</time>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </div>
-
-        <section className="region-banner">
-          <div className="map-mini" aria-hidden="true">
-            <span className="pin">📍</span>
-          </div>
-
-          <div>
-            <h2>Encontre fornecedores na sua região</h2>
-            <p>Mais agilidade para a sua operação.</p>
-          </div>
-
-          <button type="button" className="af-btn af-btn-primary">Explorar fornecedores →</button>
-        </section>
-      </main>
-    </div>
-  );
+export function ClientDashboard({user,metrics}:Props){
+ const [drawer,setDrawer]=useState(false); const root=useRef<HTMLDivElement>(null);
+ const items=[[Eye,"Produtos visualizados",metrics.views,"orange"],[Users,"Fornecedores",metrics.suppliers,"green"],[FileText,"Cotações enviadas",metrics.quotes,"blue"],[Handshake,"Conexões realizadas",metrics.connections,"purple"]] as const;
+ useGSAP(()=>{const media=gsap.matchMedia();media.add({desktop:"(min-width:1101px)",reduced:"(prefers-reduced-motion:reduce)"},ctx=>{if(ctx.conditions?.reduced)return;gsap.timeline({defaults:{ease:"power3.out"}}).from(".client-top",{autoAlpha:0,y:-10,duration:.45}).from(".client-sidebar",{autoAlpha:0,x:ctx.conditions?.desktop?-18:0,duration:.5},0).from(".dashboard-heading",{autoAlpha:0,y:20,duration:.45},.12).from(".kpi-grid article",{autoAlpha:0,y:18,scale:.97,stagger:.08,duration:.45},.2).from(".dashboard-panel",{autoAlpha:0,y:15,stagger:.06,duration:.45},.35).from(".region-banner",{autoAlpha:0,y:20,duration:.5},.45)},root);return()=>media.revert()},{scope:root});
+ async function logout(){await createClient().auth.signOut();window.location.href="/login"}
+ return <div className="dashboard-shell" ref={root}>
+  <aside className={drawer?"client-sidebar open":"client-sidebar"}><AcheFoodLogo/><div className="profile"><span>{initials(user.name)}</span><b>{user.name}<small>{user.accountType}</small></b></div><nav aria-label="Navegação principal">{nav.map(([Icon,title,href],i)=><Link className={i===0?"active":""} href={href} key={title} onClick={()=>setDrawer(false)}><Icon/>{title}{[10,11,12].includes(i)&&<em>0</em>}</Link>)}</nav><button type="button" onClick={logout}><LogOut/> Sair</button></aside>
+  {drawer&&<button className="drawer-backdrop" onClick={()=>setDrawer(false)} aria-label="Fechar menu"/>}
+  <header className="client-top"><button type="button" onClick={()=>setDrawer(true)} aria-label="Abrir menu"><Menu/></button><div className="mobile-brand"><AcheFoodLogo/></div><span/><button type="button" aria-label="Notificações"><Bell/></button><button type="button" aria-label="Mensagens"><MessageCircle/></button><div className="avatar">{initials(user.name)}</div><ChevronDown className="desktop-only"/></header>
+  <main className="dashboard-main"><div className="dashboard-heading"><div><h1>Olá, {user.name.split(" ")[0]}! 👋</h1><p>Bem-vindo ao AcheFood.</p></div><button type="button"><FileText/> Últimos 30 dias <ChevronDown/></button></div>
+   <div className="kpi-grid">{items.map(([Icon,label,value,tone])=><article className="af-card" key={label}><i className={tone}><Icon/></i><b>{value.toLocaleString("pt-BR")}</b><span>{label}</span></article>)}</div>
+   <section className="performance af-card dashboard-panel"><div className="card-head"><h2>Desempenho</h2></div><div className="chart-wrap" role="img" aria-label="Gráfico de desempenho dos últimos 30 dias"><ResponsiveContainer width="100%" height="100%"><LineChart data={chartData} margin={{top:18,right:12,left:-20,bottom:0}}><CartesianGrid stroke="#e9edf3" vertical={false}/><XAxis dataKey="date" stroke="#667085" tickLine={false}/><YAxis stroke="#667085" tickLine={false}/><Tooltip/><Legend verticalAlign="top" align="right" height={42}/><Line name="Visualizações" type="monotone" dataKey="visualizacoes" stroke="#0b6ef3" strokeWidth={3}/><Line name="Cotações" type="monotone" dataKey="cotacoes" stroke="#ff6a00" strokeWidth={3}/><Line name="Conexões" type="monotone" dataKey="conexoes" stroke="#16a34a" strokeWidth={3}/></LineChart></ResponsiveContainer><p className="chart-empty">Sua atividade aparecerá aqui conforme você usar a plataforma.</p></div></section>
+   <div className="dashboard-columns"><section className="af-card data-panel dashboard-panel"><div className="panel-title-row"><h3>Produtos mais procurados</h3><Link href="/app/mais-procurados">Ver todos</Link></div><div className="empty-state"><Search/><strong>Nenhuma busca registrada</strong><span>Os produtos mais procurados aparecerão aqui.</span></div></section><section className="af-card data-panel dashboard-panel"><div className="panel-title-row"><h3>Oportunidades recentes</h3><Link href="/app/oportunidades">Ver todas</Link></div><div className="empty-state"><Target/><strong>Nenhuma oportunidade recente</strong><span>Novas demandas compatíveis aparecerão aqui.</span></div></section></div>
+   <section className="region-banner"><div className="map-mini"><MapPin/></div><div><h2>Encontre fornecedores na sua região</h2><p>Mais agilidade para o seu negócio.</p></div><Link href="/app/perto-de-mim" className="af-btn af-btn-primary">Explorar fornecedores →</Link></section>
+  </main><nav className="bottom-nav" aria-label="Navegação móvel">{nav.slice(0,6).filter((_,i)=>i!==3).map(([Icon,title,href],i)=><Link className={i===0?"active":""} href={href} key={title}><Icon/><span>{title.replace(" produtos","")}</span></Link>)}</nav>
+ </div>
 }

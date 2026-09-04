@@ -19,13 +19,18 @@ export function LoginForm() {
 
     try {
       const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: String(data.get("email")),
         password: String(data.get("password")),
       });
 
       if (authError) throw authError;
-      window.location.href = "/app/dashboard";
+      const { data: admin } = await supabase
+        .from("admin_members")
+        .select("role,status")
+        .eq("user_id", authData.user.id)
+        .maybeSingle();
+      window.location.href = admin?.status === "active" ? "/admin/dashboard" : admin ? "/admin/primeiro-acesso" : "/app/dashboard";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível entrar.");
     } finally {
