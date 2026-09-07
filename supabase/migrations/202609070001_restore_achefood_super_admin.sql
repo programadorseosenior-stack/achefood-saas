@@ -46,7 +46,7 @@ grant execute on function public.complete_admin_first_access() to authenticated;
 
 -- Se a conta já existir, restaura o vínculo administrativo sem alterar a senha.
 insert into public.admin_members(user_id,role,status)
-select id,'super_admin',case when last_sign_in_at is null then 'pending' else 'active' end
+select id,'super_admin',(case when last_sign_in_at is null then 'pending' else 'active' end)::public.member_status
 from auth.users where lower(email)='achefood91@gmail.com'
 on conflict(user_id) do update set role='super_admin';
 
