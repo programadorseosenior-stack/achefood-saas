@@ -5,7 +5,7 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { LoginForm } from "@/components/auth/login-form";
 
 export const metadata: Metadata = { title: "Entrar", robots: { index: false, follow: false } };
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ auth_error?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ auth_error?: string; password_updated?: string }> }) {
   const params = await searchParams;
-  return <AuthShell>{params.auth_error === "callback" && <p role="alert" className="auth-error">Não foi possível confirmar seu acesso. O link pode ter expirado. Tente entrar novamente.</p>}<LoginForm/></AuthShell>;
+  return <AuthShell>{params.auth_error === "callback" && <p role="alert" className="auth-error">Não foi possível confirmar seu acesso. O link pode ter expirado. Tente entrar novamente.</p>}{params.password_updated === "1" && <p role="status" className="auth-notice">Senha alterada com sucesso. Entre com a nova senha.</p>}<LoginForm/></AuthShell>;
 }
