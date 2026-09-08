@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 export const metadata={title:"Painel do cliente",robots:{index:false,follow:false}};
 export const dynamic = "force-dynamic";
+type ClientMetrics={views:number;suppliers:number;quotes:number;connections:number};
 
 export default async function Dashboard(){
   const supabase = await createClient();
@@ -21,6 +22,8 @@ export default async function Dashboard(){
   const company = memberships?.[0];
   const companyRecord = company?.companies as unknown as { trade_name?: string } | null;
   const companyName = companyRecord?.trade_name;
+  const {data}=await supabase.rpc("get_client_dashboard_metrics",{target_company:company.company_id});
+  const metrics=(data as ClientMetrics|null)??{views:0,suppliers:0,quotes:0,connections:0};
 
-  return <ClientDashboard user={{ name: fullName, email: user.email ?? "", accountType: profile?.profile_type === "supplier" ? "Fornecedor" : "Comprador", companyName: companyName ?? null }} metrics={{ views: 0, suppliers: 0, quotes: 0, connections: 0 }} />
+  return <ClientDashboard user={{ name: fullName, email: user.email ?? "", accountType: profile?.profile_type === "supplier" ? "Fornecedor" : profile?.profile_type === "both" ? "Comprador + Fornecedor" : "Comprador", companyName: companyName ?? null }} metrics={metrics} />
 }
