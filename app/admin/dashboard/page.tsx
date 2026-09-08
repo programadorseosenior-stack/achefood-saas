@@ -12,7 +12,8 @@ export default async function AdminPage(){
   const supabase=await createClient();
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)redirect("/login?next=/admin/dashboard");
-  const {data:admin}=await supabase.from("admin_members").select("role,status").eq("user_id",user.id).maybeSingle();
+  const {data:admin,error:adminError}=await supabase.from("admin_members").select("role,status").eq("user_id",user.id).maybeSingle();
+  if(adminError)throw new Error(`Falha ao validar a permissão administrativa: ${adminError.message}`);
   if(!admin)redirect("/app/dashboard");
   if(admin.status!=="active")redirect("/admin/primeiro-acesso");
   const {data}=await supabase.rpc("get_admin_dashboard_metrics");

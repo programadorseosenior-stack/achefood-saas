@@ -27,11 +27,12 @@ export function LoginForm() {
       });
 
       if (authError) throw authError;
-      const { data: admin } = await supabase
+      const { data: admin, error: adminError } = await supabase
         .from("admin_members")
         .select("role,status")
         .eq("user_id", authData.user.id)
         .maybeSingle();
+      if (adminError) throw new Error(`Não foi possível validar seu perfil de acesso: ${adminError.message}`);
       const requestedNext = params.get("next");
       const safeNext = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : null;
       window.location.href = safeNext ?? (admin?.status === "active" ? "/admin/dashboard" : admin ? "/admin/primeiro-acesso" : "/app/dashboard");

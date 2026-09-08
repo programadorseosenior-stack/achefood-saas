@@ -22,13 +22,17 @@ export function FirstAccessGate() {
         return;
       }
 
-      const { data: admin } = await supabase
+      const { data: admin, error: adminError } = await supabase
         .from("admin_members")
         .select("status")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
       if (!active) return;
+      if (adminError) {
+        setState("invalid");
+        return;
+      }
       if (!admin) {
         window.location.replace("/app/dashboard");
         return;
