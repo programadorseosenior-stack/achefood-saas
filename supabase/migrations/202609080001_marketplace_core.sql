@@ -290,10 +290,12 @@ language plpgsql security definer set search_path='' as $$
 declare q public.quotes; buyer_company uuid;
 begin
   if decision not in ('accepted','rejected') then raise exception 'Decisao invalida'; end if;
-  select q0.*,o.buyer_company_id into q,buyer_company
-  from public.quotes q0 join public.opportunities o on o.id=q0.opportunity_id
-  where q0.id=target_quote for update of q0;
+  select q0.* into q
+  from public.quotes q0
+  where q0.id=target_quote for update;
   if q.id is null then raise exception 'Cotacao nao encontrada'; end if;
+  select o.buyer_company_id into buyer_company
+  from public.opportunities o where o.id=q.opportunity_id;
   if not (public.can_manage_opportunities(buyer_company) or public.is_super_admin()) then
     raise exception 'Acesso negado' using errcode='42501';
   end if;
