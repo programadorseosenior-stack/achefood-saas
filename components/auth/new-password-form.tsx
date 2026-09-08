@@ -5,18 +5,19 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export function NewPasswordForm() {
+export function NewPasswordForm({ recoveryAuthorized }: { recoveryAuthorized: boolean }) {
   const [ready, setReady] = useState(false);
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(recoveryAuthorized ? "" : "Este link é inválido ou expirou. Solicite um novo e-mail de recuperação.");
 
   useEffect(() => {
+    if (!recoveryAuthorized) return;
     createClient().auth.getSession().then(({ data }) => {
       setReady(Boolean(data.session));
       if (!data.session) setError("Este link é inválido ou expirou. Solicite um novo e-mail de recuperação.");
     }).catch(() => setError("Não foi possível validar o link. Solicite um novo e-mail de recuperação."));
-  }, []);
+  }, [recoveryAuthorized]);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,7 +34,7 @@ export function NewPasswordForm() {
       await supabase.auth.signOut();
       window.location.href = "/login?password_updated=1";
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Não foi possível alterar a senha.");
+      setError(cause instanceof Error && cause.message.toLowerCase().includes("password") ? "A senha não atende aos requisitos de segurança. Use pelo menos 8 caracteres." : "Não foi possível alterar a senha. Solicite um novo link.");
       setLoading(false);
     }
   }

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { useState } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { safeInternalPath } from "@/lib/auth/safe-redirect";
 
 export function LoginForm() {
   const params = useSearchParams();
@@ -34,10 +35,10 @@ export function LoginForm() {
         .maybeSingle();
       if (adminError) throw new Error(`Não foi possível validar seu perfil de acesso: ${adminError.message}`);
       const requestedNext = params.get("next");
-      const safeNext = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : null;
-      window.location.href = safeNext ?? (admin?.status === "active" ? "/admin/dashboard" : admin ? "/admin/primeiro-acesso" : "/app/dashboard");
+      const destination = admin?.role === "super_admin" && admin.status === "active" ? "/admin/dashboard" : admin?.role === "super_admin" ? "/admin/primeiro-acesso" : "/app/dashboard";
+      window.location.href = requestedNext ? safeInternalPath(requestedNext, destination) : destination;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Não foi possível entrar.");
+      setError(err instanceof Error && err.message.startsWith("Não foi possível validar") ? err.message : "E-mail ou senha inválidos. Se necessário, confirme seu e-mail ou recupere a senha.");
     } finally {
       setLoading(false);
     }
@@ -48,7 +49,7 @@ export function LoginForm() {
     try {
       const supabase = createClient();
       const requestedNext = params.get("next");
-      const safeNext = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/app/dashboard";
+      const safeNext = safeInternalPath(requestedNext);
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(safeNext)}` },

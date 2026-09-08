@@ -5,7 +5,10 @@ export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return response;
+  if (!url || !key) {
+    if (request.nextUrl.pathname.startsWith("/app/") || request.nextUrl.pathname.startsWith("/admin/")) return NextResponse.redirect(new URL("/login?auth_error=config", request.url));
+    return response;
+  }
 
   const supabase = createServerClient(url, key, {
     cookies: {

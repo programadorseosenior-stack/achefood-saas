@@ -1,10 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
+import { safeInternalPath } from "@/lib/auth/safe-redirect";
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const requestedNext = request.nextUrl.searchParams.get("next");
-  const next = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : "/app/dashboard";
+  const recovery = request.nextUrl.searchParams.get("flow") === "recovery";
+  const next = recovery ? "/recuperar-senha/nova" : safeInternalPath(requestedNext);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const failed = () => NextResponse.redirect(new URL("/login?auth_error=callback", request.url));
@@ -18,7 +20,9 @@ export async function GET(request: NextRequest) {
   });
   try {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    return error || !data.session ? failed() : response;
+    if (error || !data.session) return failed();
+    if (recovery) response.cookies.set("achefood_recovery", "1", { httpOnly: true, secure: true, sameSite: "lax", path: "/recuperar-senha/nova", maxAge: 600 });
+    return response;
   } catch {
     return failed();
   }

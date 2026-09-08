@@ -24,7 +24,7 @@ export function FirstAccessGate() {
 
       const { data: admin, error: adminError } = await supabase
         .from("admin_members")
-        .select("status")
+        .select("role,status")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
@@ -33,7 +33,7 @@ export function FirstAccessGate() {
         setState("invalid");
         return;
       }
-      if (!admin) {
+      if (!admin || admin.role !== "super_admin") {
         window.location.replace("/app/dashboard");
         return;
       }

@@ -14,9 +14,10 @@ export default async function AdminPage(){
   if(!user)redirect("/login?next=/admin/dashboard");
   const {data:admin,error:adminError}=await supabase.from("admin_members").select("role,status").eq("user_id",user.id).maybeSingle();
   if(adminError)throw new Error(`Falha ao validar a permissão administrativa: ${adminError.message}`);
-  if(!admin)redirect("/app/dashboard");
+  if(!admin||admin.role!=="super_admin")redirect("/app/dashboard");
   if(admin.status!=="active")redirect("/admin/primeiro-acesso");
-  const {data}=await supabase.rpc("get_admin_dashboard_metrics");
+  const {data,error:metricsError}=await supabase.rpc("get_admin_dashboard_metrics");
+  if(metricsError)throw new Error(`Falha ao carregar métricas administrativas: ${metricsError.message}`);
   const metrics=(data as AdminMetrics|null)??{companies:0,suppliers:0,buyers:0,products:0};
   return <AdminDashboard adminName={user.user_metadata?.first_name||"Admin"} metrics={metrics}/>;
 }
