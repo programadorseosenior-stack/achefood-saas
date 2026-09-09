@@ -19,6 +19,7 @@ const aliases: Record<string, string> = {
 
 export default async function PlatformRoute({ params }: { params: Promise<{ slug?: string[] }> }) {
   const requestedRoute = (await params).slug?.[0] ?? "buscar";
+  if (requestedRoute === "admin") redirect("/admin/dashboard");
   if (requestedRoute === "planos") redirect("/planos");
   const route = aliases[requestedRoute] ?? requestedRoute;
   if (!supported.has(route)) redirect("/app/dashboard");

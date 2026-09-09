@@ -34,7 +34,7 @@ export function LoginForm() {
         .eq("user_id", authData.user.id)
         .maybeSingle();
       if (adminError) throw new Error(`Não foi possível validar seu perfil de acesso: ${adminError.message}`);
-      const requestedNext = params.get("next");
+      const requestedNext = params.get("next") === "/app/admin" ? "/admin/dashboard" : params.get("next");
       const destination = admin?.role === "super_admin" && admin.status === "active" ? "/admin/dashboard" : admin?.role === "super_admin" ? "/admin/primeiro-acesso" : "/app/dashboard";
       window.location.href = requestedNext ? safeInternalPath(requestedNext, destination) : destination;
     } catch (err) {
