@@ -8,9 +8,19 @@ import "@/components/platform/platform.css";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "AcheFood | Plataforma", robots: { index: false, follow: false } };
 const supported = new Set(["produtos", "buscar", "oportunidades", "cotacoes", "pedidos", "conexoes", "mensagens"]);
+const aliases: Record<string, string> = {
+  "perto-de-mim": "buscar",
+  "mais-procurados": "buscar",
+  categorias: "buscar",
+  "procurar-para-mim": "oportunidades",
+  empresa: "produtos",
+  importar: "produtos",
+};
 
 export default async function PlatformRoute({ params }: { params: Promise<{ slug?: string[] }> }) {
-  const route = (await params).slug?.[0] ?? "buscar";
+  const requestedRoute = (await params).slug?.[0] ?? "buscar";
+  if (requestedRoute === "planos") redirect("/planos");
+  const route = aliases[requestedRoute] ?? requestedRoute;
   if (!supported.has(route)) redirect("/app/dashboard");
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
