@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Flame, Home, MapPin, Search, UserRound } from "lucide-react";
+import { Flame, Home, Search, UserRound } from "lucide-react";
 
 const items = [
   [Home, "Início", "/app/dashboard"],
   [Search, "Buscar", "/app/buscar"],
-  [MapPin, "Perto de mim", "/app/perto-de-mim"],
   [Flame, "Mais procurados", "/app/mais-procurados"],
   [UserRound, "Perfil", "/app/perfil"],
 ] as const;

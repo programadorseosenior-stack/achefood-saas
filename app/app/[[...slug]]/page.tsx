@@ -8,10 +8,9 @@ import "@/components/platform/client-enhancements.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "AcheFood | Plataforma", robots: { index: false, follow: false } };
-const supported = new Set(["produtos", "buscar", "oportunidades", "cotacoes", "pedidos", "conexoes", "mensagens", "perfil"]);
+const supported = new Set(["produtos", "buscar", "mais-procurados", "oportunidades", "cotacoes", "pedidos", "conexoes", "mensagens", "perfil"]);
 const aliases: Record<string, string> = {
   "perto-de-mim": "buscar",
-  "mais-procurados": "buscar",
   categorias: "buscar",
   "procurar-para-mim": "oportunidades",
   empresa: "produtos",
@@ -28,7 +27,7 @@ export default async function PlatformRoute({ params }: { params: Promise<{ slug
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/app/${route}`);
   const [{ data: profile }, { data: memberships }] = await Promise.all([
-    supabase.from("profiles").select("first_name,last_name,phone,profile_type,onboarding_completed,avatar_url").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("first_name,last_name,phone,profile_type,onboarding_completed,avatar_url,is_demo").eq("id", user.id).maybeSingle(),
     supabase.from("company_members").select("company_id,role,companies(legal_name,trade_name,cnpj,phone,cep,city,state,latitude,longitude,logo_url)").eq("user_id", user.id).eq("status", "active").limit(1),
   ]);
   if (!profile?.onboarding_completed || !memberships?.length) redirect("/onboarding");
@@ -41,7 +40,7 @@ export default async function PlatformRoute({ params }: { params: Promise<{ slug
   if (section === "produtos") {
     const { data: rows } = await supabase.from("products").select("id,name,description,sku,unit,price,currency,min_order_quantity,status,image_url,category_id,categories(name),created_at").eq("company_id", member.company_id).order("created_at", { ascending: false }); data.products = rows ?? [];
   } else if (section === "buscar") {
-    const { data: rows } = await supabase.from("products").select("id,name,description,unit,price,currency,min_order_quantity,image_url,company_id,companies(trade_name,city,state),categories(name)").eq("status", "active").order("created_at", { ascending: false }).limit(100); data.products = rows ?? [];
+    data.products = [];
   } else if (section === "oportunidades") {
     const { data: rows } = await supabase.from("opportunities").select("id,buyer_company_id,title,description,status,delivery_city,delivery_state,closes_at,published_at,categories(name),opportunity_items(id,product_name,description,quantity,unit)").order("created_at", { ascending: false }); data.opportunities = rows ?? [];
   } else if (section === "cotacoes") {
@@ -53,5 +52,5 @@ export default async function PlatformRoute({ params }: { params: Promise<{ slug
     if (conversations?.[0]?.id) { const { data: messages } = await supabase.from("messages").select("id,conversation_id,sender_company_id,body,read_at,created_at").eq("conversation_id", conversations[0].id).order("created_at"); data.messages = messages ?? []; }
   }
   const name = [profile.first_name, profile.last_name].filter(Boolean).join(" ") || user.email?.split("@")[0] || "Cliente";
-  return <PlatformWorkspace section={section} activePath={`/app/${requestedRoute}`} companyId={member.company_id} user={{ id:user.id, name, firstName:profile.first_name??"", lastName:profile.last_name??"", phone:profile.phone??"", email:user.email??"", avatarUrl:profile.avatar_url??"", accountType: profile.profile_type === "supplier" ? "Fornecedor" : profile.profile_type === "both" ? "Comprador + Fornecedor" : "Comprador", companyName: company?.trade_name ?? "Minha empresa", company:company??{} }} data={data} />;
+  return <PlatformWorkspace section={section} activePath={`/app/${requestedRoute}`} companyId={member.company_id} user={{ id:user.id, name, firstName:profile.first_name??"", lastName:profile.last_name??"", phone:profile.phone??"", email:user.email??"", avatarUrl:profile.avatar_url??"", isDemo:Boolean(profile.is_demo), accountType: profile.profile_type === "supplier" ? "Fornecedor" : profile.profile_type === "both" ? "Comprador + Fornecedor" : "Comprador", companyName: company?.trade_name ?? "Minha empresa", company:company??{} }} data={data} />;
 }
