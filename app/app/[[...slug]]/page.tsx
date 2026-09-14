@@ -4,10 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import "@/components/brand/brand.css";
 import "@/components/dashboard/dashboard.css";
 import "@/components/platform/platform.css";
+import "@/components/platform/client-enhancements.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "AcheFood | Plataforma", robots: { index: false, follow: false } };
-const supported = new Set(["produtos", "buscar", "oportunidades", "cotacoes", "pedidos", "conexoes", "mensagens"]);
+const supported = new Set(["produtos", "buscar", "oportunidades", "cotacoes", "pedidos", "conexoes", "mensagens", "perfil"]);
 const aliases: Record<string, string> = {
   "perto-de-mim": "buscar",
   "mais-procurados": "buscar",
@@ -27,8 +28,8 @@ export default async function PlatformRoute({ params }: { params: Promise<{ slug
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/app/${route}`);
   const [{ data: profile }, { data: memberships }] = await Promise.all([
-    supabase.from("profiles").select("first_name,last_name,profile_type,onboarding_completed").eq("id", user.id).maybeSingle(),
-    supabase.from("company_members").select("company_id,role,companies(trade_name)").eq("user_id", user.id).eq("status", "active").limit(1),
+    supabase.from("profiles").select("first_name,last_name,phone,profile_type,onboarding_completed,avatar_url").eq("id", user.id).maybeSingle(),
+    supabase.from("company_members").select("company_id,role,companies(legal_name,trade_name,cnpj,phone,cep,city,state,latitude,longitude,logo_url)").eq("user_id", user.id).eq("status", "active").limit(1),
   ]);
   if (!profile?.onboarding_completed || !memberships?.length) redirect("/onboarding");
   const member = memberships[0];
@@ -52,5 +53,5 @@ export default async function PlatformRoute({ params }: { params: Promise<{ slug
     if (conversations?.[0]?.id) { const { data: messages } = await supabase.from("messages").select("id,conversation_id,sender_company_id,body,read_at,created_at").eq("conversation_id", conversations[0].id).order("created_at"); data.messages = messages ?? []; }
   }
   const name = [profile.first_name, profile.last_name].filter(Boolean).join(" ") || user.email?.split("@")[0] || "Cliente";
-  return <PlatformWorkspace section={section} companyId={member.company_id} user={{ name, accountType: profile.profile_type === "supplier" ? "Fornecedor" : profile.profile_type === "both" ? "Comprador + Fornecedor" : "Comprador", companyName: company?.trade_name ?? "Minha empresa" }} data={data} />;
+  return <PlatformWorkspace section={section} activePath={`/app/${requestedRoute}`} companyId={member.company_id} user={{ id:user.id, name, firstName:profile.first_name??"", lastName:profile.last_name??"", phone:profile.phone??"", email:user.email??"", avatarUrl:profile.avatar_url??"", accountType: profile.profile_type === "supplier" ? "Fornecedor" : profile.profile_type === "both" ? "Comprador + Fornecedor" : "Comprador", companyName: company?.trade_name ?? "Minha empresa", company:company??{} }} data={data} />;
 }

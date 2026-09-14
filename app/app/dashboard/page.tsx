@@ -1,5 +1,6 @@
 import "@/components/brand/brand.css";
 import "@/components/dashboard/dashboard.css";
+import "@/components/platform/client-enhancements.css";
 import { ClientDashboard } from "@/components/dashboard/client-dashboard";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -13,8 +14,8 @@ export default async function Dashboard(){
   if (!user) redirect("/login?next=/app/dashboard");
 
   const [{ data: profile }, { data: memberships }] = await Promise.all([
-    supabase.from("profiles").select("first_name,last_name,profile_type,onboarding_completed").eq("id", user.id).maybeSingle(),
-    supabase.from("company_members").select("company_id,role,companies(trade_name)").eq("user_id", user.id).eq("status", "active").limit(1),
+    supabase.from("profiles").select("first_name,last_name,profile_type,onboarding_completed,avatar_url").eq("id", user.id).maybeSingle(),
+    supabase.from("company_members").select("company_id,role,companies(trade_name,logo_url)").eq("user_id", user.id).eq("status", "active").limit(1),
   ]);
   if (!profile?.onboarding_completed || !memberships?.length) redirect("/onboarding");
 
