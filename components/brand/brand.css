@@ -1,6 +1,2 @@
-.brand-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 800; line-height: 1; }
-.brand-logo strong { color: var(--orange); }
-.brand-logo small { display: block; font-size: 8px; font-weight: 500; margin-top: 4px; letter-spacing: .1px; }
-.brand-mark { position: relative; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 13px; color: white; background: linear-gradient(145deg, #ff9500, #ff4e00); box-shadow: -5px 5px 0 #1ea75a, 5px 5px 0 #0b6ef3; }
-.brand-mark svg { width: 27px; height: 27px; }
-.brand-mark b { position: absolute; font-size: 20px; top: 17px; }
+.brand-logo{display:inline-flex;align-items:center;flex:0 0 auto;line-height:0;border-radius:8px;overflow:hidden;background:#000}.brand-artwork{display:flex;align-items:center;gap:5px;width:220px;min-width:0;padding:3px 5px;background:#000}.brand-symbol{width:58px;height:auto;object-fit:contain;flex:0 0 auto}.brand-copy{display:grid;align-content:center;gap:1px;min-width:0;flex:1}.brand-wordmark,.brand-tagline{display:block;width:100%;height:auto;object-fit:contain}.brand-logo-compact .brand-artwork{width:56px;aspect-ratio:1;padding:3px}.brand-logo-compact .brand-symbol{width:100%}
+@media(max-width:767px){.brand-artwork{width:150px;gap:3px;padding:2px 3px}.brand-symbol{width:41px}.brand-logo-compact .brand-artwork{width:52px}.brand-logo-compact .brand-symbol{width:100%}}

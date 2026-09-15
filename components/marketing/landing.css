@@ -96,3 +96,4 @@
     scroll-behavior: auto !important;
   }
 }
+.marketing-header .brand-artwork{width:190px}.marketing-footer .brand-artwork{width:190px}@media(max-width:767px){.marketing-header .brand-artwork,.marketing-footer .brand-artwork{width:150px}}
